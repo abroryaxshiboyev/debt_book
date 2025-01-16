@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DebtController;
 use App\Http\Controllers\DebtorController;
 use App\Http\Controllers\ShopController;
 use Illuminate\Http\Request;
@@ -12,3 +13,4 @@ Route::get('/user', function (Request $request) {
 
 Route::apiResource('shops', ShopController::class);
 Route::apiResource('debtors', DebtorController::class);
+Route::apiResource('debts',DebtController::class);
