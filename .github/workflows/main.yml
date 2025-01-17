@@ -16,11 +16,23 @@ jobs:
           echo "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{secrets.SSH_HOST}} >> ~/.ssh/known_hosts
 
-      - name: set safe.directory
-        run: ssh ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} "git config --global --add safe.directory ${{secrets.WORK_DIR}}"
+      - name: configure git to handle large files
+        run: ssh ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} "
+          git config --global http.postBuffer 524288000 &&
+          git config --global http.maxRequestBuffer 524288000 &&
+          git config --global core.compression -1"
+
+      - name: clear git cache
+        run: ssh ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} "
+          cd ${{secrets.WORK_DIR}} &&
+          git gc --prune=now &&
+          git clean -fdx"
 
       - name: connect and pull
-        run: ssh ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} "cd ${{secrets.WORK_DIR}} && git checkout ${{secrets.MAIN_BRANCH}} && git pull"
+        run: ssh ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} "
+          cd ${{secrets.WORK_DIR}} &&
+          git checkout ${{secrets.MAIN_BRANCH}} &&
+          git pull"
 
       - name: cleanup
         run: rm -rf ~/.ssh
