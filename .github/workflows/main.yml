@@ -4,40 +4,31 @@ on:
       - main
 
 jobs:
-  run_pull:
-    name: run pull
+  deploy:
+    name: Deploy Project
     runs-on: ubuntu-latest
 
     steps:
-      - name: install ssh keys
+      - name: Install SSH keys
         run: |
           mkdir -p ~/.ssh
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{secrets.SSH_HOST}} >> ~/.ssh/known_hosts
 
-      - name: configure git to handle large files
-        run: ssh ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} "
-          git config --global http.postBuffer 524288000 &&
-          git config --global http.maxRequestBuffer 524288000 &&
-          git config --global core.compression -1"
-
-      - name: clear git cache
-        run: ssh ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} "
-          cd ${{secrets.WORK_DIR}} &&
-          git gc --prune=now &&
-          git clean -fdx"
-
-      - name: connect and pull
+      - name: Git Pull
         run: ssh ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} "
           cd ${{secrets.WORK_DIR}} &&
           git checkout ${{secrets.MAIN_BRANCH}} &&
-          git pull"
+          git pull origin ${{secrets.MAIN_BRANCH}}"
 
-      - name: install composer dependencies
+      - name: Install Dependencies
         run: ssh ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} "
           cd ${{secrets.WORK_DIR}} &&
           composer install --no-dev --optimize-autoloader"
 
-      - name: cleanup
-        run: rm -rf ~/.ssh
+      - name: Set Permissions
+        run: ssh ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}} "
+          cd ${{secrets.WORK_DIR}} &&
+          chmod -R 775 storage bootstrap/cache &&
+          chown -R www-data:www-data storage bootstrap/cache"
