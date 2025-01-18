@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             ShopSeeder::class,
             DebtorSeeder::class,
             DebtSeeder::class,
+            PaymentSeeder::class,
         ]);
     }
 }
