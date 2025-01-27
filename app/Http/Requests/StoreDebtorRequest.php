@@ -22,7 +22,8 @@ class StoreDebtorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'shop_id'=>'required|integer|exists:shops,id',
+//            'shop_id'=>'required|integer|exists:shops,id',
+            'shop_id'=>'required|integer',
             'name'=>'required|string|max:255',
             'phone'=>'required|string|max:20',
         ];

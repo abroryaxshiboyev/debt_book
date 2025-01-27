@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDebtorRequest;
 use App\Http\Requests\UpdateDebtorRequest;
 use App\Models\Debtor;
+use App\Models\Shop;
 use App\Services\Contracts\DebtorServiceInterface;
 
 class DebtorController extends Controller
@@ -21,8 +22,9 @@ class DebtorController extends Controller
      */
     public function index()
     {
-        return $this->debtorService->getPaginatedDebtors(20);
-        //TODO: View index page for debtors
+        $debtors = $this->debtorService->getPaginatedDebtors(20);
+        return view('debtors.index', compact('debtors'));
+//        TODO: View index page for debtors
     }
 
     /**
@@ -30,6 +32,8 @@ class DebtorController extends Controller
      */
     public function create()
     {
+        $shops = Shop::all();
+        return view('debtors.create', compact('shops'));
         //TODO: View create page for debtors
     }
 
@@ -38,11 +42,18 @@ class DebtorController extends Controller
      */
     public function store(StoreDebtorRequest $request)
     {
-        $data=$this->debtorService->createDebtor($request->validated());
+        // Validatsiya qilingan ma'lumotlarni oling
+        $data = $request->validated();
 
-        return $data;
-        //TODO: Redirect to index page with success message
+        // Qarzdor yaratish uchun service metodini chaqiring
+        $this->debtorService->createDebtor($data);
+
+        // Muvaffaqiyatli xabar bilan index sahifasiga qayta yo'naltirish
+        return redirect()
+            ->route('debtors.index')
+            ->with('success', 'Debtor successfully added!');
     }
+
 
     /**
      * Display the specified resource.
@@ -55,26 +66,40 @@ class DebtorController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Debtor $debtor)
+    public function edit($id)
     {
-        //TODO: View edit page for
+        $debtor = Debtor::findOrFail($id);
+        $shops = Shop::all();
+        return view('debtors.edit', compact('debtor', 'shops'));
     }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDebtorRequest $request, string $id)
+    public function update(UpdateDebtorRequest $request, $id)
     {
-        return $this->debtorService->updateDebtor($id,$request->validated());
-        //TODO: Redirect to index page with success message
+        $debtor = Debtor::findOrFail($id);
+        $debtor->update($request->validated());
+
+        return redirect()
+            ->route('debtors.index')
+            ->with('success', 'Debtor updated successfully!');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        return $this->debtorService->deleteDebtor($id);
-        //TODO: Redirect to index page with success message
+        // Qarzdorni o'chirish
+        $this->debtorService->deleteDebtor($id);
+
+        // Muvaffaqiyatli xabar bilan index sahifasiga qayta yo'naltirish
+        return redirect()
+            ->route('debtors.index')
+            ->with('success', 'Debtor successfully deleted!');
     }
+
 }
