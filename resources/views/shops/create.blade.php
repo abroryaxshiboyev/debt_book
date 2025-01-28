@@ -2,18 +2,18 @@
 
 @section('content')
     <div class="container">
-        <h1>Add New Debtor</h1>
+        <h1>Add New Shop</h1>
 
         <x-form-errors />
 
-        <form action="{{ route('debtors.store') }}" method="POST">
+        <form action="{{ route('shops.store') }}" method="POST">
             @csrf
 
             <x-select
-                label="Shop"
-                name="shop_id"
-                :options="$shops"
-                :selected="old('shop_id')" />
+                label="Owner"
+                name="owner_id"
+                :options="$owners"
+                :selected="old('owner_id')" />
 
             <x-input
                 label="Name"
@@ -22,9 +22,9 @@
                 required />
 
             <x-input
-                label="Phone"
-                name="phone"
-                value="{{ old('phone') }}"
+                label="Address"
+                name="address"
+                value="{{ old('address') }}"
                 required />
 
             <x-button class="btn-success">Save</x-button>

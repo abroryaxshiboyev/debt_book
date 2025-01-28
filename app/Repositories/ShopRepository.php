@@ -9,16 +9,16 @@ class ShopRepository implements ShopRepositoryInterface
 {
     public function getAll()
     {
-        return Shop::all();
+        return Shop::with(['owner'])->get();
     }
 
     public function getPaginatedShops(int $perPage=10){
-        return Shop::paginate($perPage);
+        return Shop::with(['owner'])->paginate($perPage);
     }
 
     public function getById($id)
     {
-        return Shop::findOrFail($id);
+        return Shop::with('owner')->findOrFail($id);
     }
 
     public function create(array $data)

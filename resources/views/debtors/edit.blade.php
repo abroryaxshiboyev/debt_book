@@ -3,33 +3,35 @@
 @section('content')
     <div class="container">
         <h1>Edit Debtor</h1>
+
+        <x-form-errors />
+
         <form action="{{ route('debtors.update', $debtor->id) }}" method="POST">
             @csrf
             @method('PUT')
 
-            <div class="mb-3">
-                <label for="shop_id" class="form-label">Shop</label>
-                <select name="shop_id" id="shop_id" class="form-control">
-                    @foreach ($shops as $shop)
-                        <option value="{{ $shop->id }}" {{ $shop->id == $debtor->shop_id ? 'selected' : '' }}>
-                            {{ $shop->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+            <x-select
+                label="Shop"
+                name="shop_id"
+                :options="$shops"
+                :selected="$debtor->shop_id" />
 
-            <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $debtor->name) }}" required>
-            </div>
+            <x-input
+                label="Name"
+                name="name"
+                value="{{ old('name', $debtor->name) }}"
+                required />
 
-            <div class="mb-3">
-                <label for="phone" class="form-label">Phone</label>
-                <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone', $debtor->phone) }}" required>
-            </div>
+            <x-input
+                label="Phone"
+                name="phone"
+                value="{{ old('phone', $debtor->phone) }}"
+                required />
 
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{{ route('debtors.index') }}" class="btn btn-secondary">Cancel</a>
+            <x-button class="btn-primary">Update</x-button>
+            <x-button type="button" class="btn-secondary">
+                <a href="{{ route('debtors.index') }}" style="text-decoration: none; color: inherit;">Cancel</a>
+            </x-button>
         </form>
     </div>
 @endsection
