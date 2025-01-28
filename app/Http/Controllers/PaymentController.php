@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
+use App\Models\Debtor;
 use App\Models\Payment;
 use App\Services\Contracts\PaymentServiceInterface;
 
 class PaymentController extends Controller
 {
     protected $paymentService;
-    public function __construct( PaymentServiceInterface $paymentService)
+    public function __construct(PaymentServiceInterface $paymentService)
     {
         $this->paymentService = $paymentService;
     }
@@ -19,8 +20,9 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        return $this->paymentService->getPaginatedPayments(20);
-        //TODO: View index page for payments
+        $payments = $this->paymentService->getPaginatedPayments(20);
+
+        return view('payments.index', compact('payments'));
     }
 
     /**
@@ -28,7 +30,8 @@ class PaymentController extends Controller
      */
     public function create()
     {
-        //TODO: View create page for payments
+        $debtors = Debtor::all();
+        return view('payments.create', compact('debtors'));
     }
 
     /**
@@ -36,10 +39,11 @@ class PaymentController extends Controller
      */
     public function store(StorePaymentRequest $request)
     {
-        $data=$this->paymentService->createPayment($request->validated());
+        $this->paymentService->createPayment($request->validated());
 
-        return $data;
-        //TODO: Redirect to index page with success message
+        return redirect()
+            ->route('payments.index')
+            ->with('success', 'Payment successfully added!');
     }
 
     /**
@@ -53,9 +57,11 @@ class PaymentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Payment $payment)
+    public function edit(string $id)
     {
-        //TODO: View edit page for
+        $payment = $this->paymentService->getPaymentById($id);
+        $debtors = Debtor::all();
+        return view('payments.edit', compact('payment', 'debtors'));
     }
 
     /**
@@ -63,10 +69,10 @@ class PaymentController extends Controller
      */
     public function update(UpdatePaymentRequest $request, $id)
     {
-        $payment=$this->paymentService->updatePayment($id, $request->validated());
-
-        return $payment;
-        //TODO: Redirect to index page with success message
+        $this->paymentService->updatePayment($id, $request->validated());
+        return redirect()
+            ->route('payments.index')
+            ->with('success', 'Payment updated successfully!');
     }
 
     /**
@@ -76,7 +82,8 @@ class PaymentController extends Controller
     {
         $this->paymentService->deletePayment($id);
 
-        return response()->json(['message' => 'Payment deleted successfully.'], 200);
-        //TODO: Redirect to index page with success message
+        return redirect()
+            ->route('payments.index')
+            ->with('success', 'Payment successfully deleted!');
     }
 }

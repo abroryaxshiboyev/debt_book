@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDebtRequest;
 use App\Http\Requests\UpdateDebtRequest;
 use App\Models\Debt;
+use App\Models\Debtor;
 use App\Services\Contracts\DebtServiceInterface;
 
 class DebtController extends Controller
 {
     protected $debtService;
 
-    public function __construct(DebtServiceInterface $debtService){
+    public function __construct(DebtServiceInterface $debtService)
+    {
         $this->debtService = $debtService;
     }
     /**
@@ -19,8 +21,8 @@ class DebtController extends Controller
      */
     public function index()
     {
-        return $this->debtService->getPaginatedDebts(20);
-        //TODO: View index page for debts
+        $debts = $this->debtService->getPaginatedDebts(20);
+        return view('debts.index', compact('debts'));
     }
 
     /**
@@ -28,7 +30,8 @@ class DebtController extends Controller
      */
     public function create()
     {
-        //TODO: View create page for debts
+        $debtors = Debtor::all();
+        return view('debts.create', compact('debtors'));
     }
 
     /**
@@ -36,10 +39,11 @@ class DebtController extends Controller
      */
     public function store(StoreDebtRequest $request)
     {
-        $data=$this->debtService->createDebt($request->validated());
+        $this->debtService->createDebt($request->validated());
 
-        return $data;
-        //TODO: Redirect to index page with success message
+        return redirect()
+            ->route('debts.index')
+            ->with('success', 'Debt successfully added!');
     }
 
     /**
@@ -56,7 +60,9 @@ class DebtController extends Controller
      */
     public function edit(string $id)
     {
-        //TODO: View edit page for debts
+        $debt = $this->debtService->getDebtById($id);
+        $debtors = Debtor::all();
+        return view('debts.edit', compact('debt', 'debtors'));
     }
 
     /**
@@ -64,18 +70,23 @@ class DebtController extends Controller
      */
     public function update(UpdateDebtRequest $request, string $id)
     {
-        return $this->debtService->updateDebt($id, $request->validated());
-        //TODO: Redirect to index page with success message
+        $this->debtService->updateDebt($id, $request->validated());
+
+        return redirect()
+            ->route('debts.index')
+            ->with('success', 'Debt updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Debt $debt)
+    public function destroy(string $id)
     {
-        $this->debtService->deleteDebt($debt->id);
 
-        return response()->json(['message' => 'Debt deleted successfully.'], 200);
-        //TODO: Redirect to index page with success message
+        $this->debtService->deleteDebt($id);
+
+        return redirect()
+            ->route('debts.index')
+            ->with('success', 'Debt successfully deleted!');
     }
 }
