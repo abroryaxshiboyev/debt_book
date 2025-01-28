@@ -11,7 +11,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::apiResource('shops', ShopController::class);
-Route::apiResource('debtors', DebtorController::class);
+// Route::apiResource('shops', ShopController::class);
+// Route::apiResource('debtors', DebtorController::class);
 Route::apiResource('debts',DebtController::class);
 Route::apiResource('payments', PaymentController::class);

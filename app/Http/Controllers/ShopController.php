@@ -6,6 +6,7 @@ use App\DTOs\Post\CreateShopDTO;
 use App\Http\Requests\StoreShopRequest;
 use App\Http\Requests\UpdateShopRequest;
 use App\Models\Shop;
+use App\Models\User;
 use App\Services\Contracts\ShopServiceInterface;
 
 class ShopController extends Controller
@@ -23,9 +24,9 @@ class ShopController extends Controller
      */
     public function index()
     {
-        return $this->shopService->getPaginatedShops(20);
+        $shops = $this->shopService->getPaginatedShops(20);
 
-        //TODO: View index page
+        return view('shops.index', compact('shops'));
     }
 
     /**
@@ -33,7 +34,8 @@ class ShopController extends Controller
      */
     public function create()
     {
-        //TODO: View create page
+        $owners = User::all();
+        return view('shops.create', compact('owners'));
     }
 
     /**
@@ -41,11 +43,11 @@ class ShopController extends Controller
      */
     public function store(StoreShopRequest $request)
     {
-        $data=$this->shopService->createShop($request->validated());
+        $this->shopService->createShop($request->validated());
 
-        return $data;
-
-        //TODO: Redirect to index page with success message
+        return redirect()
+            ->route('shops.index')
+            ->with('success', 'Shop successfully added!');
     }
 
     /**
@@ -60,32 +62,41 @@ class ShopController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Shop $shop)
+    public function edit(string $id)
     {
-        //TODO: View edit page
+        $shop = $this->shopService->getShopById($id);
+        $owners = User::all();
+        return view('shops.edit', compact('shop', 'owners'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateShopRequest $request, Shop $shop)
+    public function update(UpdateShopRequest $request, string $id)
     {
-        $this->shopService->updateShop($shop->id, $request->validated());
+        $this->shopService->updateShop($id, $request->validated());
 
-        return $shop;
-
-        //TODO: Redirect to index page with success message
+        return redirect()
+            ->route('shops.index')
+            ->with('success', 'Shop updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Shop $shop)
+    public function destroy(string $id)
     {
-        $this->shopService->deleteShop($shop->id);
+        $shop = Shop::findOrFail($id);
 
-        return response()->json(['message' => 'Shop deleted successfully.'], 200);
+        // Check if shop has debtors
+        if ($shop->debtors()->exists()) {
+            return redirect()->route('shops.index')->with('error', 'This shop cannot be deleted because it has associated debtors.');
+        }
 
-        //TODO: Redirect to index page with success message
+        $this->shopService->deleteShop($id);
+
+        return redirect()
+            ->route('shops.index')
+            ->with('success', 'Shop successfully deleted!');
     }
 }

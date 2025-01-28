@@ -10,11 +10,11 @@
         </li><!-- End Dashboard Nav -->
 
         <li class="nav-item">
-            <a class="nav-link " href="#">
+            <a class="nav-link {{ Request::routeIs('shops.index') ? 'active' : '' }}" href="{{ route('shops.index') }}">
                 <i class="bi bi-file-earmark"></i>
                 <span>Shops</span>
             </a>
-        </li><!-- End Blank Page Nav -->
+        </li>
 
         <li class="nav-item">
             <a class="nav-link {{ Request::routeIs('debtors.index') ? 'active' : '' }}" href="{{ route('debtors.index') }}">
