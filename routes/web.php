@@ -9,3 +9,4 @@ Route::get('/home', function () {
 
 
 Route::resource('debtors', DebtorController::class);
+Route::resource('shops', \App\Http\Controllers\ShopController::class);
