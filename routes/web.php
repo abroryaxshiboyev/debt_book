@@ -2,11 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DebtorController;
-use App\Http\Controllers\ShopController;
 
-Route::get('/', function () {
+Route::get('/home', function () {
     return view('home');
-});
+})->name('home');
+
 
 Route::resource('debtors', DebtorController::class);
-Route::resource('shops', ShopController::class);
+Route::resource('shops', \App\Http\Controllers\ShopController::class);
