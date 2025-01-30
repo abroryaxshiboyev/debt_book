@@ -13,5 +13,5 @@ Route::get('/user', function (Request $request) {
 
 // Route::apiResource('shops', ShopController::class);
 // Route::apiResource('debtors', DebtorController::class);
-Route::apiResource('debts',DebtController::class);
-Route::apiResource('payments', PaymentController::class);
+// Route::apiResource('debts',DebtController::class);
+// Route::apiResource('payments', PaymentController::class);

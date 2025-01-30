@@ -9,17 +9,17 @@ class PaymentRepository implements PaymentRepositoryInterface
 {
     public function getAll()
     {
-        return Payment::all();
+        return Payment::with(['debtor'])->orderByDesc('id')->get();
     }
 
     public function getPaginated(int $perPage = 10)
     {
-        return Payment::paginate($perPage);
+        return Payment::with(['debtor'])->orderByDesc('id')->paginate($perPage);
     }
 
     public function getById($id)
     {
-        return Payment::findOrFail($id);
+        return Payment::with(['debtor'])->findOrFail($id);
     }
 
     public function create(array $data)

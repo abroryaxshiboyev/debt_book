@@ -18,5 +18,18 @@
                 <span>Debtors</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link {{ Request::routeIs('debts.index') ? 'active' : '' }}" href="{{ route('debts.index') }}">
+                <i class="bi bi-file-earmark"></i>
+                <span>Debts</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link {{ Request::routeIs('payments.index') ? 'active' : '' }}" href="{{ route('payments.index') }}">
+                <i class="bi bi-file-earmark"></i>
+                <span>Payments</span>
+            </a>
+        </li>
     </ul>
 </aside>
